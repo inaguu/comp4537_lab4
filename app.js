@@ -3,7 +3,7 @@ const url = require("url")
 const port = 3000
 
 let dictionary = []
-let word_count = 0
+let count = 0
 
 class Word {
     constructor (word, definition) {
@@ -17,12 +17,14 @@ http.createServer((req, res) => {
 
     if (q.pathname == "/api/definitions/") {
 
-        if (req.method === "OPTIONS") {
-            res.setHeader()
-            res.end()
-        }
+        // if (req.method === "OPTIONS") {
+        //     res.setHeader()
+        //     res.end()
+        // }
 
         if (req.method === "GET" && q.query["word"]) {
+            count = count + 1
+
             let word = q.query["word"]
             let word_object = dictionary.find(key => key["word"] === word)
 
@@ -35,11 +37,17 @@ http.createServer((req, res) => {
             let word_def = word_object["word_def"]
 
             res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-            res.write(`<p>${word}: ${word_def}</p>`)
+            res.write(`
+                <p>Request # ${count}</p><br></br>
+                <p>Word found:<br></br> 
+                <p>${word}: ${word_def}</p>
+            `)
             res.end()
         }
         
         if (req.method === "POST" && q.query["definition"]) {
+            count = count + 1
+
             let word = q.query["word"]
             let word_def = q.query["definition"]
 
@@ -55,7 +63,7 @@ http.createServer((req, res) => {
 
             res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
             res.write(`
-                <p>Request # ${word_count}</p><br></br>
+                <p>Request # ${count}</p><br></br>
                 <p>New entry recorded:<br></br> 
                 <p>${word}: ${word_def}</p>
             `)
