@@ -17,11 +17,6 @@ http.createServer((req, res) => {
 
     if (q.pathname == "/api/definitions/") {
 
-        // if (req.method === "OPTIONS") {
-        //     res.setHeader()
-        //     res.end()
-        // }
-
         if (req.method === "GET" && q.query["word"]) {
             count = count + 1
 
@@ -32,17 +27,17 @@ http.createServer((req, res) => {
                 res.writeHead(404, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
                 res.write(`<p>Warning! ${word} does not exist.</p>`)
                 res.end()
-            }
+            } else {
+                let word_def = word_object["word_def"]
 
-            let word_def = word_object["word_def"]
-
-            res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-            res.write(`
-                <p>Request # ${count}</p><br></br>
-                <p>Word found:<br></br> 
-                <p>${word}: ${word_def}</p>
-            `)
-            res.end()
+                res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+                res.write(`
+                    <p>Request # ${count}</p><br>
+                    <p>Word found:<br>
+                    <p>${word}: ${word_def}</p>
+                `)
+                res.end()
+            }            
         }
         
         if (req.method === "POST" && q.query["definition"]) {
@@ -56,19 +51,23 @@ http.createServer((req, res) => {
                 res.writeHead(404, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
                 res.write(`<p>Warning! ${word} already exists.</p>`)
                 res.end()
+            } else {
+                let new_word = new Word(word, word_def)
+                dictionary.push(new_word)
+
+                res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+                res.write(`
+                    <p>Request # ${count}</p><br>
+                    <p>New entry recorded:<br> 
+                    <p>${word}: ${word_def}</p>
+                `)
+                res.end()
             }
-
-            let new_word = new Word(word, word_def)
-            dictionary.push(new_word)
-
-            res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-            res.write(`
-                <p>Request # ${count}</p><br></br>
-                <p>New entry recorded:<br></br> 
-                <p>${word}: ${word_def}</p>
-            `)
-            res.end()
-        } 
+        }
+    } else {
+        res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+        res.write(`<h3>Starting Page</h3>`)
+        res.end()
     }
 
     // let word = q.query["word"]
@@ -85,10 +84,6 @@ http.createServer((req, res) => {
     // console.log(word_is_here)
 
     // console.log(word_is_here["word_def"])
-
-    res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-    res.write(`<h3>Starting Page</h3>`)
-    res.end()
 
 }).listen(port)
 
