@@ -29,24 +29,18 @@ http.createServer((req, res) => {
             // WORD object is not found
             if (!word_object) {
                 res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-                res.write(`<p>Warning! ${word} does not exist.</p>`)
-                res.end()
+                res.end(JSON.stringify({response: `Request # ${count}`, error: `${word} is not found`}))
             } else { // WORD object is found
-                let word_def = word_object["word_def"]
-
                 res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-                res.write(`
-                    <p>Request # ${count}</p><br>
-                    <p>Word found:<br>
-                    <p>${word}: ${word_def}</p>
-                `)
-                res.end()
-            }            
-        } else { // if method is a GET but the API requirements are wrong
-            res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-            res.write(`<h3>Wrong API requirements </h3>`)
-            res.end()
+                res.end(JSON.stringify({response: `Request # ${count}`, word_object}))
+
+            }   
         }
+
+        // } else { // if method is a GET but the API requirements are wrong
+        //     res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+        //     res.write(`<h3>Wrong API requirements</h3>`)
+        // }
         
         // if the method is a POST and is the right API requirements 
         if (req.method === "POST" && q.query["definition"]) {
@@ -60,28 +54,23 @@ http.createServer((req, res) => {
             // if the WORD object already exists
             if (word_object) {
                 res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-                res.write(`<p>Warning! ${word} already exists.</p>`)
-                res.end()
+                res.end(JSON.stringify({response: `Request # ${count}`, error: `${word} already exists`}))
             } else { // WORD object doesnt exists 
                 let new_word = new Word(word, word_def)
                 dictionary.push(new_word)
 
                 res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-                res.write(`
-                    <p>Request # ${count}</p><br>
-                    <p>New entry recorded:<br> 
-                    <p>${word}: ${word_def}</p>
-                `)
-                res.end()
+                res.end(JSON.stringify({response: `Request # ${count}`, success: `New entry recorded:`}))
             }
-        } else { // if the method is a POST but the API requirements are wrong
-            res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-            res.write(`<h3>Wrong API requirements </h3>`)
-            res.end()
         }
+
+        // } else { // if the method is a POST but the API requirements are wrong
+        //     res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+        //     res.write(`<h3>Wrong API requirements</h3>`)
+        // }
+
     } else { // starting page
         res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-        res.write(`<h3>Starting Page</h3>`)
         res.end()
     }
 
