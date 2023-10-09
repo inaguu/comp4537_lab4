@@ -5,6 +5,7 @@ const port = 3000
 let dictionary = []
 let count = 0
 
+// word class to put into dictionary
 class Word {
     constructor (word, definition) {
         this.word = word
@@ -15,19 +16,22 @@ class Word {
 http.createServer((req, res) => {
     let q = url.parse(req.url, true)
 
+    // checks if the pathname matches the requirements 
     if (q.pathname == "/api/definitions/") {
 
+        // if the method is a GET and there is the right API requirements 
         if (req.method === "GET" && q.query["word"]) {
             count = count + 1
 
             let word = q.query["word"]
             let word_object = dictionary.find(key => key["word"] === word)
 
+            // WORD object is not found
             if (!word_object) {
-                res.writeHead(404, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+                res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
                 res.write(`<p>Warning! ${word} does not exist.</p>`)
                 res.end()
-            } else {
+            } else { // WORD object is found
                 let word_def = word_object["word_def"]
 
                 res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
@@ -38,8 +42,13 @@ http.createServer((req, res) => {
                 `)
                 res.end()
             }            
+        } else { // if method is a GET but the API requirements are wrong
+            res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+            res.write(`<h3>Wrong API requirements </h3>`)
+            res.end()
         }
         
+        // if the method is a POST and is the right API requirements 
         if (req.method === "POST" && q.query["definition"]) {
             count = count + 1
 
@@ -47,11 +56,13 @@ http.createServer((req, res) => {
             let word_def = q.query["definition"]
 
             let word_object = dictionary.find(key => key["word"] === word)
+
+            // if the WORD object already exists
             if (word_object) {
-                res.writeHead(404, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+                res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
                 res.write(`<p>Warning! ${word} already exists.</p>`)
                 res.end()
-            } else {
+            } else { // WORD object doesnt exists 
                 let new_word = new Word(word, word_def)
                 dictionary.push(new_word)
 
@@ -63,27 +74,16 @@ http.createServer((req, res) => {
                 `)
                 res.end()
             }
+        } else { // if the method is a POST but the API requirements are wrong
+            res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
+            res.write(`<h3>Wrong API requirements </h3>`)
+            res.end()
         }
-    } else {
+    } else { // starting page
         res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
         res.write(`<h3>Starting Page</h3>`)
         res.end()
     }
-
-    // let word = q.query["word"]
-    // let word_def = q.query["definition"]
-    // console.log("got word and definition")
-
-    // let new_word = new Word(word, word_def)
-    // dict.push(new_word)
-    // console.log("pushed into dict")
-    // console.log(dict)
-
-    // let word_is_here = dict.find(key => key["word"] === word)
-    // console.log("here is word")
-    // console.log(word_is_here)
-
-    // console.log(word_is_here["word_def"])
 
 }).listen(port)
 
