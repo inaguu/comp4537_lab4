@@ -54,13 +54,17 @@ http.createServer((req, res) => {
             // if the WORD object already exists
             if (word_object) {
                 res.writeHead(400, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-                res.end(JSON.stringify({response: `Request # ${count}`, error: `${word} already exists`}))
+                // res.end(JSON.stringify({response: `Request # ${count}`, error: `${word} already exists`}))
+                res.write("hello")
+                res.end()
             } else { // WORD object doesnt exists 
                 let new_word = new Word(word, word_def)
                 dictionary.push(new_word)
 
                 res.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'})
-                res.end(JSON.stringify({response: `Request # ${count}`, success: `New entry recorded:`}))
+                // res.end(JSON.stringify({response: `Request # ${count}`, success: `New entry recorded:`}))
+                res.write("no")
+                res.end();
             }
         }
 
